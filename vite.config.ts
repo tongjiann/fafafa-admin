@@ -30,7 +30,6 @@ fs.readdirSync(`./node_modules/element-plus/es/components`).map(dirname => {
 // https://vitejs.dev/config/
 export default defineConfig(() => {
   return {
-    base: '/admin/',
     plugins: [
       vue(),
       VueSetupExtend(),
