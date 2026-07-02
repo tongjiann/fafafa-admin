@@ -59,6 +59,6 @@ jobs:
       - name: send info to ding
         uses: indiesdev/curl@v1.1
         with:
-          url: https://api.xiw.world/api/msg/send?msg=fafafa-admin镜像推送完成
+          url: https://api.xiw.world/api/msg/send?msg=fafafa-admin%E9%95%9C%E5%83%8F%E6%8E%A8%E9%80%81%E5%AE%8C%E6%88%90
           log-response: true
           timeout: 20000
