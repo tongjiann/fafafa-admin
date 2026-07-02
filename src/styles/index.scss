@@ -1,0 +1,158 @@
+:root {
+  --el-font-size-dynamic: 14px;
+  --el-icon-size-dynamic: 20px;
+  //  .el-dialog {
+  //    --el-dialog-margin-top: 10vh;
+  //  }
+
+  .el-drawer {
+    .el-drawer__header {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.hide {
+  display: none;
+}
+
+.el-descriptions__label {
+  color: var(--el-text-color-regular) !important;
+  font-weight: bold;
+}
+
+.el-select,
+.el-date-editor,
+.el-input-number,
+.el-cascader {
+  width: 100% !important;
+  min-width: 90px;
+
+  .el-input__wrapper {
+    width: -moz-available;
+    width: -webkit-fill-available;
+  }
+}
+
+.full-height-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-page {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+
+  .el-header {
+    height: auto;
+    padding: 10px;
+    border-bottom: 1px solid var(--el-border-color);
+  }
+
+  .top-filter {
+    margin: 8px 8px -8px;
+
+    .el-button {
+      border-width: 0 !important;
+    }
+  }
+
+  .list-search {
+    &.el-form:not(.top-filter) {
+      background-color: var(--el-fill-color-lighter);
+    }
+
+    .el-row {
+      margin: 9px 0 -9px !important;
+    }
+  }
+
+  .list-operation {
+    margin-bottom: 0;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+
+    >div:last-child {
+      margin-left: auto;
+    }
+
+    .el-select {
+      min-width: 160px !important;
+    }
+
+    .search-input {
+      width: 200px;
+    }
+  }
+}
+
+.long-text {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+// 树节点扁平化
+.el-tree-node.is-expanded.flat-tree-node-container>.el-tree-node__children {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+// 自定义树节点
+.custom-tree-node {
+  width: 100%;
+  display: flex;
+  align-items: center;
+
+  .operation-container {
+    display: none;
+    margin-left: auto;
+    margin-right: 8px;
+
+    .el-button+.el-button {
+      margin-left: 8px;
+    }
+  }
+
+  &:hover .operation-container {
+    display: inline-block;
+  }
+}
+
+.el-tag {
+  border-width: 0 !important;
+}
+
+
+.el-dropdown {
+  .el-button:focus-visible {
+    outline: none !important;
+  }
+}
+
+.el-table th {
+  background-color: var(--el-fill-color-light) !important;
+}
+
+.el-dialog {
+  padding: unset !important;
+  .el-dialog__header ,.el-dialog__footer{
+    padding: 10px;
+    background-color: var(--el-fill-color-light);
+  }
+
+  .el-dialog__body {
+    padding: 10px ;
+  }
+}
+
+.el-pagination {
+  margin: 7px;
+  display: flex;
+  justify-content: flex-end;
+}
