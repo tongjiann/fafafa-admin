@@ -2,6 +2,22 @@
 import type { EChartsOption } from 'echarts'
 import logoSrc from '@/assets/logo.png'
 import { StarFilled } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { api } from '@/utils/request'
+
+const clearingCache = ref(false)
+
+async function clearMethodCache() {
+  clearingCache.value = true
+  try {
+    const res = await api.post<string[]>('/cache/clear-method')
+    ElMessage.success(`方法缓存已清空: ${res.data.length} 个缓存区域`)
+  } catch (err: any) {
+    ElMessage.error(err.msg || err.message || '清空缓存失败')
+  } finally {
+    clearingCache.value = false
+  }
+}
 
 const tags: Array<{ label: string; type?: 'success' | 'info' | 'warning' | 'danger' }> = [
   {
@@ -111,6 +127,14 @@ const currentDate = ref(new Date())
                 {{ label }}
               </el-tag>
             </div>
+            <el-button
+              type="warning"
+              :loading="clearingCache"
+              style="align-self: flex-end"
+              @click="clearMethodCache"
+            >
+              一键清空方法缓存
+            </el-button>
             <span style="align-self: flex-end">
               官网链接：<a class="main-color" target="_blank" href="https://www.diboot.com">https://www.diboot.com</a>
             </span>
