@@ -96,7 +96,7 @@ export default defineConfig(() => {
     server: {
       host: true,
       proxy: {
-        '/api': 'http://192.168.123.48:12079'
+        '/api': 'http://127.0.0.1:8080'
       }
     }
   }
