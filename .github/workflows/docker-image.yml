@@ -1,20 +1,14 @@
-# fafafa 前端 Docker 镜像构建工作流
 name: Build fafafa admin
 
 on:
   push:
     branches:
       - main
-  # 可以手动触发
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-      tags:
-        required: false
-        description: 'Test scenario tags'
+
+env:
+  IMAGE_NAME: tongjiann/fafafa-admin
+  TZ: Asia/Shanghai
 
 jobs:
   build:
@@ -24,37 +18,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Generate Date Tag
+        id: date
+        run: |
+          echo "tag=$(date +'%Y%m%d')" >> "$GITHUB_OUTPUT"
 
-      - name: Install pnpm
-        run: corepack prepare pnpm@9 --activate
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm build
-
-      - name: Login DockerHub
+      - name: Login Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker
-        run: |
-          docker build -t tongjiann/fafafa-admin:latest .
-
-      - name: Push Docker
-        run: |
-          docker push tongjiann/fafafa-admin:latest
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ steps.date.outputs.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: send info to ding
         uses: indiesdev/curl@v1.1
