@@ -5,6 +5,10 @@ import JSEncrypt from 'jsencrypt'
 import useSso from '@/hooks/use-sso'
 import auth from '@/utils/auth'
 import i18nStore from '@/utils/i18n'
+import {
+  decryptLoginUrlCredential,
+  encryptLoginUrlCredential
+} from '@/utils/login-url-credential'
 import { useI18n } from 'vue-i18n'
 const encryptor = new JSEncrypt()
 encryptor.setPublicKey(`MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzPy1UcwzgRT8dRUpAW0H
@@ -34,6 +38,81 @@ refreshTraceId()
 const captchaSrc = `${baseURL}/auth/captcha`
 
 const router = useRouter()
+const URL_TRIGGER_CLICK_COUNT = 5
+const URL_TRIGGER_RESET_DELAY = 2000
+let titleClickCount = 0
+let titleClickTimer: ReturnType<typeof setTimeout> | undefined
+
+const copyText = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+    textarea.select()
+    const copied = document.execCommand('copy')
+    textarea.remove()
+    return copied
+  }
+}
+
+const generateLoginUrl = async () => {
+  if (!form.username || !form.password) {
+    ElMessage.warning('请先输入用户名和密码')
+    return
+  }
+
+  try {
+    const [username, password] = await Promise.all([
+      encryptLoginUrlCredential(form.username),
+      encryptLoginUrlCredential(form.password)
+    ])
+    const href = router.resolve({ name: 'Login', query: { username, password } }).href
+    const loginUrl = new URL(href, window.location.href).toString()
+    if (await copyText(loginUrl)) {
+      ElMessage.success('加密登录地址已复制')
+    } else {
+      ElMessage.error('复制失败，请检查浏览器剪贴板权限')
+    }
+  } catch {
+    ElMessage.error('加密登录地址生成失败，请检查密钥配置')
+  }
+}
+
+const handleTitleClick = () => {
+  titleClickCount += 1
+  clearTimeout(titleClickTimer)
+  if (titleClickCount >= URL_TRIGGER_CLICK_COUNT) {
+    titleClickCount = 0
+    void generateLoginUrl()
+    return
+  }
+  titleClickTimer = setTimeout(() => {
+    titleClickCount = 0
+  }, URL_TRIGGER_RESET_DELAY)
+}
+
+const fillCredentialsFromUrl = async () => {
+  const { username, password, ...query } = router.currentRoute.value.query
+  if (typeof username !== 'string' || typeof password !== 'string') return
+
+  try {
+    const [decryptedUsername, decryptedPassword] = await Promise.all([
+      decryptLoginUrlCredential(username),
+      decryptLoginUrlCredential(password)
+    ])
+    form.username = decryptedUsername
+    form.password = decryptedPassword
+  } catch {
+    ElMessage.warning('登录链接中的账号信息无效')
+  } finally {
+    await router.replace({ query })
+  }
+}
 
 const redirect = () => {
   const query = router.currentRoute.value.query
@@ -80,6 +159,7 @@ const { authorizeInfoMap, ssoLoading, initSsoParams, redirectTo } = useSso({
 
 onMounted(() => {
   auth.clearToken()
+  void fillCredentialsFromUrl()
   if (enableSso) {
     initSsoParams()
   }
@@ -89,7 +169,7 @@ onMounted(() => {
 <template>
   <div v-loading="ssoLoading" :element-loading-text="i18n.t('login.loading')" class="content">
     <div class="form">
-      <h1 style="text-align: center">Diboot Admin UI</h1>
+      <h1 style="text-align: center" @click="handleTitleClick">Diboot Admin UI</h1>
       <div v-if="enableI18n" style="text-align: right; margin-bottom: 5px">
         <el-dropdown
           @command="
