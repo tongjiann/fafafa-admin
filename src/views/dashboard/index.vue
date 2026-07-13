@@ -127,12 +127,7 @@ const currentDate = ref(new Date())
                 {{ label }}
               </el-tag>
             </div>
-            <el-button
-              type="warning"
-              :loading="clearingCache"
-              style="align-self: flex-end"
-              @click="clearMethodCache"
-            >
+            <el-button type="warning" :loading="clearingCache" style="align-self: flex-end" @click="clearMethodCache">
               一键清空方法缓存
             </el-button>
             <span style="align-self: flex-end">
