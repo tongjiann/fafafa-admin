@@ -5,10 +5,7 @@ import JSEncrypt from 'jsencrypt'
 import useSso from '@/hooks/use-sso'
 import auth from '@/utils/auth'
 import i18nStore from '@/utils/i18n'
-import {
-  decryptLoginUrlCredential,
-  encryptLoginUrlCredential
-} from '@/utils/login-url-credential'
+import { decryptLoginUrlCredential, encryptLoginUrlCredential } from '@/utils/login-url-credential'
 import { useI18n } from 'vue-i18n'
 const encryptor = new JSEncrypt()
 encryptor.setPublicKey(`MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzPy1UcwzgRT8dRUpAW0H
